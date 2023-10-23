@@ -1,0 +1,100 @@
+---
+exp_name: nb301_dartsreduce_12303_psi1_1 #darts_nb301_300_acc_baseline_keeptop30_1234_temperature_ramping
+### Change this to your desired log directory ###
+exp_dir: logs/garbo
+runner: GranRunner
+use_gpu: true
+gpus: [0]
+seed: 12303
+debug: true # when true, greatly increase training speed by mocking data
+dataset:
+  cls: DARTSData # [NASData, DARTSData]
+  NB101_path: data/nasbench_only108.tfrecord
+  NB301_path: data/nb_models/xgb_v1.0
+  CIFAR_path: data/
+generator:
+  name: GRAN
+  cls: DartsGenerator # [GRAN, DartsGenerator]
+  device: cpu
+  search_space: darts # [NB101, darts, smalldarts, custom]
+  ### These only take effect if the search_space is 'custom' ###
+  max_num_nodes: 100
+  num_node_labels: 0
+  num_edge_labels: 0
+  ### ------------------------------------------------------ ###
+  num_mix_component: 10  
+  block_size: 1
+  sample_stride: 1
+  hidden_dim: 24
+  embedding_dim: 24
+  num_GNN_layers: 7
+  num_GNN_prop: 1
+  num_canonical_order: 1  
+  dimension_reduce: true
+  has_attention: true
+  edge_weight: 1.0e+0
+  erdos_renyi_p: 0.25
+explorer:
+  cls: ErdosRenyi # [ErdosRenyi, SkipExplorer]
+evaluator:
+  cls: NASBench301 # [Oracle, NASBench101, NASBench301, Uniform]
+oracle:
+  num_process: 1 # how many training process, ideally equal to how many gpu you have
+  dataset: CIFAR10 # [CIFAR10, CIFAR100]
+  lr: 0.025
+  momentum: 0.9
+  weight_decay: 0.0003
+  batch_size: 96
+  epochs: 1
+  drop_path_prob: 0.2
+  auxiliary: true
+  auxiliary_weight: 0.4
+  cutout: true
+  cutout_length: 16
+  grad_clip: 5.
+  save_snapshots: false
+  report_freq: 100000
+nas:
+  max_nas_iterations: 20000000 # 20
+  max_oracle_evaluations: 300
+  sample_batch_size: 8
+  reward: acc # [acc, cdf]
+  baseline: true
+  ewma_alpha: 0.5
+  keep_top: 30 # "[(0, 10), (40, 20), (100, 30), (200, 50)]"
+  explore_method: three # [none, harmonic, three, exponential, constant]
+  explore_p: 1.0
+train:
+  optimizer: Adam  
+  lr_decay: 0.3
+  lr_decay_epoch: [100000000] # no decay
+  num_workers: 0
+  max_epoch: 200
+  batch_size: 2
+  display_iter: 10
+  lr: 1.0e-3
+  wd: 0.0e-4
+  momentum: 0.9
+  print_every: 5
+  shuffle: true
+  is_resume: false
+test:
+  ### unused? TODO: remove ###
+  batch_size: 20
+  num_workers: 0
+  num_test_gen: 100 # number of generated samples
+  is_vis: true
+  is_single_plot: false # visualize `num_vis` samples in a single image
+  is_test_ER: false # test Erdos-Renyi baseline
+  num_vis: 9
+  vis_num_row: 3 # visualize `num_vis` samples in `vis_num_row` rows
+  better_vis: false
+  test_model_dir: snapshot_model
+  test_model_name: gran_lobster.pth
+experimental:
+  adj_95pct: false
+  lab_95pct: false
+  use_temperature: none # [none, fixed, ramping]
+  temperature: 1
+  nb301_noise: false # adds noise from nb 301 model ensemble. Seems to have
+                     # little effect so just keep it false

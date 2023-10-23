@@ -1,0 +1,98 @@
+dataset:
+  CIFAR_path: data/
+  NB101_path: data/nasbench_only108.tfrecord
+  NB301_path: data/nb_models/xgb_v1.0
+  cls: NASData
+debug: false
+evaluator:
+  cls: NASBench201
+exp_dir: logs/nb201rerun
+exp_name: 2023-07-31-01-25-30_im16_337163
+experimental:
+  adj_95pct: false
+  lab_95pct: false
+  nb301_noise: false
+  temperature: 1
+  use_temperature: none
+explorer:
+  cls: ErdosRenyi
+generator:
+  block_size: 1
+  cls: GRAN
+  device: cuda
+  dimension_reduce: true
+  edge_weight: 1.0
+  embedding_dim: 24
+  erdos_renyi_p: 0.25
+  has_attention: true
+  hidden_dim: 24
+  max_num_nodes: 100
+  name: GRAN
+  num_GNN_layers: 7
+  num_GNN_prop: 1
+  num_canonical_order: 1
+  num_edge_labels: 0
+  num_mix_component: 10
+  num_node_labels: 0
+  sample_stride: 1
+  search_space: NB201
+gpus:
+- 0
+nas:
+  baseline: false
+  ewma_alpha: 0.5
+  explore_method: '10'
+  explore_p: 1.0
+  keep_top: 5
+  max_nas_iterations: 20000000
+  max_oracle_evaluations: 100
+  reward: cdf
+  sample_batch_size: 1
+oracle:
+  auxiliary: true
+  auxiliary_weight: 0.4
+  batch_size: 96
+  cutout: true
+  cutout_length: 16
+  dataset: ImageNet16-120
+  drop_path_prob: 0.2
+  epochs: 1
+  grad_clip: 5.0
+  lr: 0.025
+  momentum: 0.9
+  num_process: 1
+  report_freq: 100000
+  save_snapshots: false
+  weight_decay: 0.0003
+run_id: '337163'
+runner: GranRunner
+save_dir: logs/nb201rerun/im16
+seed: 127
+test:
+  batch_size: 20
+  better_vis: false
+  is_single_plot: false
+  is_test_ER: false
+  is_vis: true
+  num_test_gen: 100
+  num_vis: 9
+  num_workers: 0
+  test_model_dir: snapshot_model
+  test_model_name: gran_lobster.pth
+  vis_num_row: 3
+train:
+  batch_size: 2
+  display_iter: 10
+  is_resume: false
+  lr: 0.001
+  lr_decay: 0.3
+  lr_decay_epoch:
+  - 100000000
+  max_epoch: 50
+  momentum: 0.9
+  num_workers: 0
+  optimizer: Adam
+  print_every: 5
+  shuffle: true
+  wd: 0.0
+use_gpu: true
